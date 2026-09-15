@@ -1,0 +1,59 @@
+schema_version = 1
+
+[project]
+package = "lilygo-ui-xiaozhi"
+version = "0.1.0"
+app_id = "cc.lilygo.ui.XiaoZhi"
+title = "XiaoZhi"
+summary = "XiaoZhi assistant with expressions, live captions, and voice chat"
+description = "A XiaoZhi voice assistant for Linux CM0 with device pairing, continuous conversation, push-to-talk, response interruption, expressions, live captions, chat history, and automatic reconnection."
+license = "MIT"
+source_repo = "https://github.com/LILYGO-UI/lilygo-ui-xiaozhi"
+homepage = "https://github.com/LILYGO-UI/lilygo-ui-xiaozhi"
+categories = ["Multimedia", "Utilities"]
+
+[[project.authors]]
+name = "lbuque"
+email = "110239031@qq.com"
+
+[project.assets]
+icon = "assets/xiaozhi-app-icon.png"
+
+[[project.assets.screenshots]]
+path = "assets/previews/xiaozhi-main.png"
+caption = "Expressions and live captions on the CM0 portrait display"
+
+[[project.assets.screenshots]]
+path = "assets/previews/xiaozhi-binding.png"
+caption = "Six-digit device pairing code for xiaozhi.me"
+
+[[project.assets.screenshots]]
+path = "assets/previews/xiaozhi-history.png"
+caption = "Conversation history with user transcripts and assistant replies"
+
+[[project.permissions]]
+id = "network"
+reason = "Access online application data"
+
+[[project.permissions]]
+id = "filesystem"
+access = "read-write"
+scope = "app-data"
+reason = "Store application settings"
+
+[project.compatibility]
+architectures = ["arm64"]
+min_appkit_version = "0.1.0"
+
+[project.launcher]
+order = 90
+
+[build]
+host_preset = "host-simulator"
+cross_preset = "cm0-cross"
+package_dir = "dist"
+
+[deploy]
+host = "raspberrypi.local"
+user = "pi"
+port = 22

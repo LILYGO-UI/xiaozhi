@@ -1,0 +1,8 @@
+/.cache/
+/.lpm/
+/.xiaozhi/
+/.venv/
+/build/
+/dist/
+/publish.json
+.DS_Store
