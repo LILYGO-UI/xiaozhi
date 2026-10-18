@@ -2,6 +2,7 @@
 
 #include "components/components.hpp"
 
+#include <cm0/input.h>
 #include <cm0/typography.h>
 
 #include <algorithm>
@@ -299,6 +300,7 @@ void AssistantView::create_actions()
 void AssistantView::create_history()
 {
     history_overlay_ = container(surface_, "assistant_history_overlay");
+    cm0_input_set_focus_scope(history_overlay_);
     lv_obj_add_flag(history_overlay_, LV_OBJ_FLAG_IGNORE_LAYOUT);
     background(history_overlay_, components::color_page_background);
     column(history_overlay_, 0);
@@ -661,6 +663,21 @@ void AssistantView::key_event(lv_event_t *event)
 {
     auto *view = static_cast<AssistantView *>(lv_event_get_user_data(event));
     const auto key = lv_event_get_key(event);
+
+    // Printable keys belong to a focused editor. Keep page-level shortcuts
+    // out of that input path so a future text field can accept "m" normally.
+    auto *target = lv_event_get_target_obj(event);
+    // LV_EVENT_KEY carries the key value as its event parameter when it is
+    // delivered to an object, so lv_event_get_indev() cannot be used here.
+    auto *group = lv_group_get_default();
+    auto *focused = group ? lv_group_get_focused(group) : nullptr;
+    if ((target && lv_obj_is_editable(target)) ||
+        (focused && lv_obj_is_editable(focused)))
+        return;
+
+    // History is a modal focus scope. Do not let a global shortcut start a
+    // recording while the user is navigating that overlay.
+    if (view->view_model_.history_visible() && key != LV_KEY_ESC) return;
     if (key == 'm' || key == 'M') {
         view->ptt_pressed_ = !view->ptt_pressed_;
         if (view->ptt_pressed_) view->view_model_.begin_push_to_talk();

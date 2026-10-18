@@ -291,6 +291,12 @@ struct Page {
         settle(parent);
     }
 
+    void key(std::uint32_t value) const
+    {
+        lv_obj_send_event(surface, LV_EVENT_KEY, &value);
+        settle(parent);
+    }
+
     void set_continuous(bool enabled) const
     {
         lv_obj_set_state(continuous, LV_STATE_CHECKED, enabled);
@@ -330,6 +336,13 @@ struct Page {
 
 void exercise_interactions(const Page &page, lv_display_t *display, int width, int height)
 {
+    // The microphone shortcut is useful when the detachable keyboard is the
+    // active input device. A modal history view must keep that shortcut local.
+    page.key('m');
+    assert(text(page.status) == "Listening");
+    page.key('m');
+    assert(text(page.status) == "Ready to talk");
+
     page.talk();
     page.validate_main();
     page.set_continuous(true);
@@ -360,6 +373,8 @@ void exercise_interactions(const Page &page, lv_display_t *display, int width, i
     for (int turn = 0; turn < 12; ++turn) page.talk();
     page.click(page.history);
     page.validate_history();
+    page.key('m');
+    assert(text(page.status) == "Ready to talk");
     assert(lv_obj_find_by_name(page.chat, "assistant_user_bubble"));
     assert(lv_obj_find_by_name(page.chat, "assistant_reply_bubble"));
     const auto child_count = lv_obj_get_child_count(page.chat);

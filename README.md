@@ -62,6 +62,10 @@ echo cancellation (AEC). See [runtime configuration](docs/03-runtime-configurati
 | **History** / **New chat** | Read the current session history, or clear it and create a new protocol session. Closing the history panel preserves its contents. |
 | **Reconnect** / **Refresh code** | Retry the connection or obtain a new pairing code. |
 
+When a physical keyboard is available, use `Tab`/`Shift+Tab` or the arrow keys to move between
+controls and `Enter` to activate the focused control. Press `M` to toggle push-to-talk; the
+history view keeps keyboard focus within its own controls.
+
 Recording or connection errors turn off continuous conversation; enable it again
 when ready. Hardware keys and wake-word behavior are documented in
 [runtime configuration](docs/03-runtime-configuration.md).
