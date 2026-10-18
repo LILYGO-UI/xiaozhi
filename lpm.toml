@@ -2,7 +2,7 @@ schema_version = 1
 
 [project]
 package = "lilygo-ui-xiaozhi"
-version = "0.1.0"
+version = "0.1.1"
 app_id = "cc.lilygo.ui.XiaoZhi"
 title = "XiaoZhi"
 summary = "XiaoZhi assistant with expressions, live captions, and voice chat"
