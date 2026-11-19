@@ -6,7 +6,9 @@ project(${LILYGO_UI_CMAKE_PROJECT_NAME} LANGUAGES C CXX)
 include(GNUInstallDirs)
 include(CTest)
 # Match the 50 Hz panel in LVGL, the statically linked SDK, and this application.
-add_compile_definitions(LV_DEF_REFR_PERIOD=20)
+if(NOT LILYGO_UI_PLATFORM STREQUAL "k230")
+    add_compile_definitions(LV_DEF_REFR_PERIOD=20)
+endif()
 find_package(LilyGoUI CONFIG REQUIRED)
 
 configure_file(
@@ -272,9 +274,18 @@ if(TARGET lilygo_ui_xiaozhi_helper)
 endif()
 set(CPACK_DEBIAN_APP_PACKAGE_DEPENDS "${_xiaozhi_package_dependencies}")
 set(CPACK_DEBIAN_APP_PACKAGE_SECTION "utils")
-set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS OFF)
-if(CMAKE_CROSSCOMPILING AND CMAKE_SYSTEM_PROCESSOR MATCHES "^(aarch64|arm64)$")
-    set(CPACK_DEBIAN_PACKAGE_ARCHITECTURE
-        "${LILYGO_UI_PACKAGE_ARCHITECTURE}")
+if(LILYGO_UI_DEBIAN_ARCHITECTURE)
+    set(CPACK_DEBIAN_PACKAGE_ARCHITECTURE "${LILYGO_UI_DEBIAN_ARCHITECTURE}")
+elseif(CMAKE_CROSSCOMPILING AND CMAKE_SYSTEM_PROCESSOR MATCHES "^(aarch64|arm64)$")
+    set(CPACK_DEBIAN_PACKAGE_ARCHITECTURE arm64)
+endif()
+if("DEB" IN_LIST CPACK_GENERATOR AND CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    if(NOT COMMAND lilygo_ui_enable_debian_dependencies)
+        message(FATAL_ERROR
+            "Debian packaging requires an AppKit SDK with automatic runtime dependency analysis. "
+            "Update the pinned AppKit or select a compatible SDK with "
+            "-DLilyGoUI_DIR=/path/to/cm0-appkit.")
+    endif()
+    lilygo_ui_enable_debian_dependencies()
 endif()
 include(CPack)

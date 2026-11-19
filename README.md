@@ -348,3 +348,24 @@ The application retains its own AppKit and MVVM architecture. Its interface uses
 LILYGO UI AppKit and [LVGL](https://lvgl.io/), with pairing through
 [xiaozhi.me](https://xiaozhi.me). See the [adaptation guide](docs/02-linux-reference.md)
 for the scope of these references.
+
+## K230 Debian riscv64 packages
+
+The `k230-debian` preset builds the application for T-Display-K230 Debian
+riscv64. Use LPM with architecture selection support and an AppKit source SDK
+that provides `cmake/k230-debian-toolchain.cmake`. The existing CM0 ARM64 and
+host simulator presets remain available.
+
+Install `gcc-riscv64-linux-gnu` and `g++-riscv64-linux-gnu` on Linux, or LLVM, LLD and dpkg on macOS (`brew install llvm lld dpkg`). From this application's repository, run the packaging command.
+
+```sh
+lpm pack --arch riscv64
+```
+
+The `k230-debian` CMake preset downloads the pinned Debian BSP from the `LILYGO-UI/canaan-gen` release and verifies its SHA-256. It keeps the archive and `sysroot/` in this project's `.cache/k230-bsp/20261116T104343Z/`. The next build reuses the cache offline, even with a new `build/` directory. Packages appear in `dist/`.
+
+Run `lpm set-target k230` once to use `lpm pack` for subsequent builds. To use your own Debian sysroot, set `LILYGO_UI_DEBIAN_SYSROOT` before the first configure, or pass `-DLILYGO_UI_DEBIAN_SYSROOT=/path/to/sysroot` to CMake. The pinned `third_party/cm0-appkit` supplies the application SDK. `-DLilyGoUI_DIR=/path/to/appkit` selects another copy.
+
+The bundled protocol helper remains enabled on K230. Its Debian riscv64 sysroot
+needs the ALSA, OpenSSL and Opus development packages; the shared SDK preparation
+script installs these alongside the graphics dependencies.

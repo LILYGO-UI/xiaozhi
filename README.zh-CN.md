@@ -323,3 +323,25 @@ cpack --config build/cm0-cross/CPackConfig.cmake -B dist
 应用保留自身的 AppKit 与 MVVM 架构，界面使用 LILYGO UI AppKit 和
 [LVGL](https://lvgl.io/)，通过 [xiaozhi.me](https://xiaozhi.me) 完成绑定。
 参考范围详见[适配说明](docs/02-linux-reference.md)。
+
+## K230 Debian riscv64 打包
+
+`k230-debian` preset 用于 T-Display-K230 的 Debian riscv64 应用构建。
+需要支持架构选择的 LPM，以及包含 `cmake/k230-debian-toolchain.cmake` 的
+AppKit 源码 SDK。原有 CM0 ARM64 和桌面模拟器 preset 仍可使用。
+
+Linux 主机安装 `gcc-riscv64-linux-gnu` 和 `g++-riscv64-linux-gnu`，macOS 主机用 `brew install llvm lld dpkg` 安装交叉编译和打包工具。在应用仓库根目录运行打包命令。
+
+```sh
+lpm pack --arch riscv64
+```
+
+`k230-debian` CMake 预设首次配置时从 `LILYGO-UI/canaan-gen` Release 下载固定版本的 Debian BSP，校验 SHA-256，并将压缩包和 `sysroot/` 保存在当前项目的 `.cache/k230-bsp/20261116T104343Z/`。之后可以离线打包，重新生成 `build/` 也会复用缓存。生成的 `.deb` 在 `dist/` 目录。
+
+执行一次 `lpm set-target k230` 后，后续直接运行 `lpm pack`。如需自定义 Debian sysroot，在首次配置前设置 `LILYGO_UI_DEBIAN_SYSROOT`，或向 CMake 传入 `-DLILYGO_UI_DEBIAN_SYSROOT=/path/to/sysroot`。AppKit 默认使用 `third_party/cm0-appkit`，可用 `-DLilyGoUI_DIR=/path/to/appkit` 指定其他版本。
+
+执行 `lpm set-target k230` 可将 K230 保存为默认打包目标，此后直接运行
+`lpm pack` 即会选择 riscv64。
+
+K230 默认编译并打包协议助手；Debian riscv64 sysroot 必须包含 ALSA、OpenSSL 和
+Opus 开发包。共享 SDK 的准备脚本会同时准备这些依赖和图形库。
